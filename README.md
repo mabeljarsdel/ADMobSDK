@@ -16,8 +16,24 @@ AdmobSDK is a Swift framework, a simple Ads engine that supports the google prof
 
 To integrate AdmobSDK into your Xcode project using CocoaPods, specify it in your `Podfile`:
 
+Pod automatically updates latest version
 ```
-pod 'AdmobSDK', :path => "../../AdmobSDK"
+pod 'AdmobSDK', :git => "https://github.com/Binary-Bridge-Labs/ADMobSDK"
+```
+
+Pod from special branch
+```
+pod 'AdmobSDK', :git => "https://github.com/Binary-Bridge-Labs/ADMobSDK", :branch => 'dev'
+```
+
+Pod from special tag
+```
+pod 'AdmobSDK', :git => "https://github.com/Binary-Bridge-Labs/ADMobSDK", :tag => 'x.y.z'
+```
+
+Pod from special commit
+```
+pod 'AdmobSDK', :git => "https://github.com/Binary-Bridge-Labs/ADMobSDK", :commit => 'xxx'
 ```
 
 Then, run the following command:
@@ -31,17 +47,18 @@ $ pod install
 ### Quick Start
 
 Id ads Test:
+Refernce: https://developers.google.com/admob/ios/test-ads
 
 ```swift
 public struct SampleAdUnitID {
-    public static let adFormatAppOpen              = "ca-app-pub-3940256099942544/3419835294"
-    public static let adFormatBanner               = "ca-app-pub-3940256099942544/6300978111"
-    public static let adFormatInterstitial         = "ca-app-pub-3940256099942544/1033173712"
-    public static let adFormatInterstitialVideo    = "ca-app-pub-3940256099942544/8691691433"
-    public static let adFormatRewarded             = "ca-app-pub-3940256099942544/5224354917"
-    public static let adFormatRewardedInterstitial = "ca-app-pub-3940256099942544/5354046379"
-    public static let adFormatNativeAdvanced       = "ca-app-pub-3940256099942544/2247696110"
-    public static let adFormatNativeAdvancedVideo  = "ca-app-pub-3940256099942544/1044960115"
+    public static let adFormatAppOpen              = ""
+    public static let adFormatBanner               = ""
+    public static let adFormatInterstitial         = ""
+    public static let adFormatInterstitialVideo    = ""
+    public static let adFormatRewarded             = ""
+    public static let adFormatRewardedInterstitial = ""
+    public static let adFormatNativeAdvanced       = ""
+    public static let adFormatNativeAdvancedVideo  = ""
 }
 ```
 
