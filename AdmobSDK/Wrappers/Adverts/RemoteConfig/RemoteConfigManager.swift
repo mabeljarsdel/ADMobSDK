@@ -8,9 +8,29 @@
 
 import Foundation
 import FirebaseRemoteConfig
+import FirebaseAnalytics
+
+public protocol KeyRemote {
+    var key: String { get }
+}
+
+public protocol EventTracking {
+    var key: String { get }
+}
+
+public enum DefaultRemoteKey: String, KeyRemote {
+    
+    // Subscription List
+    case subscriptionList = "subscription_list"
+    // Adverts
+    case stateShowAds = "state_show_ads"
+    case timeRemoteShowAd = "time_remote_show_ads"
+    
+    public var key: String { return rawValue }
+}
 
 public class RemoteConfigManager: NSObject {
-    static let shared = RemoteConfigManager()
+    public static let shared = RemoteConfigManager()
     private let remoteConfig = RemoteConfig.remoteConfig()
     private let TIMEOUT_REMOTE_CONFIG: TimeInterval = 5 // 5 seconds
     private var workItemTimeOut: DispatchWorkItem? // Create a private DispatchWorkItem property
@@ -27,7 +47,6 @@ public class RemoteConfigManager: NSObject {
         settings.minimumFetchInterval = 0
         settings.fetchTimeout = TIMEOUT_REMOTE_CONFIG
         remoteConfig.configSettings = settings
-        remoteConfig.setDefaults(fromPlist: KeyRemoteConfig.filePetAdverts.rawValue)
         remoteConfig.addOnConfigUpdateListener { [weak self] configUpdate, error in
             guard let configUpdate, error == nil else {
                 print("Error listening for config updates: \(error)")
@@ -46,7 +65,7 @@ public class RemoteConfigManager: NSObject {
         }
     }
     
-    func fetchConfig(completion: @escaping ((_ success: Bool) -> Void)) {
+    public func fetchConfig(completion: @escaping ((_ success: Bool) -> Void)) {
         remoteConfig.fetch { [weak self] status, error in
             print("Callback fetch remote config")
             guard let self = self else { return }
@@ -70,7 +89,7 @@ public class RemoteConfigManager: NSObject {
         }
     }
     
-    func fetchConfigSync(completion: @escaping ((_ success: Bool) -> Void)) {
+    public func fetchConfigSync(completion: @escaping ((_ success: Bool) -> Void)) {
         workItemTimeOut?.cancel()
         workItemTimeOut = nil
         remoteConfig.fetch { [weak self] status, error in
@@ -108,32 +127,32 @@ public class RemoteConfigManager: NSObject {
     }
     
     // MARK: - Support function
-    func getValue(by key: KeyRemoteConfig) -> RemoteConfigValue? {
-        return self.remoteConfig[key.rawValue]
+    public func getValue(by key: KeyRemote) -> RemoteConfigValue? {
+        return self.remoteConfig[key.key]
     }
     
-    func getValue(by key: String) -> RemoteConfigValue? {
+    public func getValue(by key: String) -> RemoteConfigValue? {
         return self.remoteConfig[key]
     }
     
-    public func number(forKey key: KeyRemoteConfig) -> Int {
-        return RemoteConfig.remoteConfig()[key.rawValue].numberValue.intValue
+    public func number(forKey key: KeyRemote) -> Int {
+        return RemoteConfig.remoteConfig()[key.key].numberValue.intValue
     }
     
-    public func bool(forKey key: KeyRemoteConfig) -> Bool {
-        return RemoteConfig.remoteConfig()[key.rawValue].boolValue
+    public func bool(forKey key: KeyRemote) -> Bool {
+        return RemoteConfig.remoteConfig()[key.key].boolValue
     }
     
-    public func string(forKey key: KeyRemoteConfig) -> String {
-        return RemoteConfig.remoteConfig()[key.rawValue].stringValue ?? ""
+    public func string(forKey key: KeyRemote) -> String {
+        return RemoteConfig.remoteConfig()[key.key].stringValue ?? ""
     }
     
-    public func double(forKey key: KeyRemoteConfig) -> Double {
-        return RemoteConfig.remoteConfig()[key.rawValue].numberValue.doubleValue
+    public func double(forKey key: KeyRemote) -> Double {
+        return RemoteConfig.remoteConfig()[key.key].numberValue.doubleValue
     }
     
-    public func objectJson<T: Decodable>(forKey key: KeyRemoteConfig, type: T.Type) -> T? {
-        let data = RemoteConfig.remoteConfig()[key.rawValue].dataValue
+    public func objectJson<T: Decodable>(forKey key: KeyRemote, type: T.Type) -> T? {
+        let data = RemoteConfig.remoteConfig()[key.key].dataValue
         return try? JSONDecoder().decode(type, from: data)
     }
     
@@ -157,4 +176,19 @@ public class RemoteConfigManager: NSObject {
         let data = RemoteConfig.remoteConfig()[key].dataValue
         return try? JSONDecoder().decode(type, from: data)
     }
+}
+
+public class FirebaseEventManager {
+    
+    public class func logEvent(with name: String, params: [String: Any] = [:]) {
+        Analytics.logEvent(name, parameters: params)
+    }
+    
+    public class func logEvent(with event: EventTracking, params: [String: Any] = [:]) {
+        var content = params
+        content["app_version"] = "\(Bundle.main.releaseVersionNumber)(\(Bundle.main.buildVersionNumber))"
+        Analytics.logEvent(event.key,
+                           parameters: content)
+    }
+    
 }

@@ -43,39 +43,39 @@ enum UMPEventType: String {
 
 
 public class UMPUtils {
-    static let shared = UMPUtils()
-    var umpDebugSettings: UMPDebugSettings? = nil
+    public static let shared = UMPUtils()
+    public var umpDebugSettings: UMPDebugSettings? = nil
     
-    var consentStatus: UMPConsentStatus {
+    public var consentStatus: UMPConsentStatus {
         return UMPConsentInformation.sharedInstance.consentStatus
     }
     
-    var formStatus: UMPFormStatus {
+    public var formStatus: UMPFormStatus {
         return UMPConsentInformation.sharedInstance.formStatus
     }
     
-    var privacyOptionsRequirementStatus: UMPPrivacyOptionsRequirementStatus {
+    public var privacyOptionsRequirementStatus: UMPPrivacyOptionsRequirementStatus {
         return UMPConsentInformation.sharedInstance.privacyOptionsRequirementStatus
     }
     
-    var personalizeAds: Bool {
+    public var personalizeAds: Bool {
         let purposeConsents = UserDefaults.standard.string(forKey: "IABTCF_PurposeConsents")
         // Purposes are zero-indexed. Index 0 contains information about Purpose 1.
         return purposeConsents?.first == "1"
     }
     
-    func resetStateGDPRAgreement() {
+    public func resetStateGDPRAgreement() {
         UMPConsentInformation.sharedInstance.reset()
     }
     
-    func showFormGDPR(idx: Int, completion: @escaping ((_ accepted: Bool) -> Void)) {
-        let networkConnected = isNetworkConnected()
-        // Log tracking user network status
-        logEvent(idx: idx, event: .trackingNetwork, content: ["connected": networkConnected])
-        if !networkConnected {
-            completion(false)
-            return
-        }
+    public func showFormGDPR(idx: Int, completion: @escaping ((_ accepted: Bool) -> Void)) {
+//        let networkConnected = isNetworkConnected()
+//        // Log tracking user network status
+//        logEvent(idx: idx, event: .trackingNetwork, content: ["connected": networkConnected])
+//        if !networkConnected {
+//            completion(false)
+//            return
+//        }
         switch consentStatus {
         case .unknown:
             // Log tracking error user content unknown status
@@ -128,7 +128,7 @@ public class UMPUtils {
     }
     
     private func presentFormGDPR(idx: Int, completion: @escaping ((_ accepted: Bool) -> Void)) {
-        guard let currentController = AppRouter.shared.currentViewController else {
+        guard let currentController = UIApplication.shared.delegate?.getRootViewController() else {
             completion(false)
             return
         }
@@ -173,7 +173,7 @@ public class UMPUtils {
         }
     }
     
-    var canShowPersonalizeAd: Bool {
+    public var canShowPersonalizeAd: Bool {
         let prefs = UserDefaults.standard
         let purposeConsent: String = prefs.string(forKey: "IABTCF_PurposeConsents") ?? ""
         let vendorConsent: String = prefs.string(forKey:"IABTCF_VendorConsents") ?? ""
@@ -222,8 +222,69 @@ public class UMPUtils {
 // MARK: - Define log event tracking
 extension UMPUtils {
     
-    func logEvent(idx: Int, event type: UMPEventType, content: [String: Any]) {
+    private func logEvent(idx: Int, event type: UMPEventType, content: [String: Any]) {
         Analytics.logEvent(String.init(format: type.rawValue, idx), parameters: content)
+    }
+    
+}
+
+extension String {
+
+    internal func indexOf(_ sub: String) -> Int? {
+        guard let range = self.range(of: sub), !range.isEmpty else {
+            return nil
+        }
+        return self.distance(from: self.startIndex, to: range.lowerBound)
+    }
+
+    func urlEncodedString(_ encodeAll: Bool = false) -> String {
+        var allowedCharacterSet: CharacterSet = .urlQueryAllowed
+        allowedCharacterSet.remove(charactersIn: "\n:#/?@!$&'()*+,;=")
+        if !encodeAll {
+            allowedCharacterSet.insert(charactersIn: "[]")
+        }
+        return self.addingPercentEncoding(withAllowedCharacters: allowedCharacterSet)!
+    }
+    
+    var queryStringParameters: [String: String] {
+        var parameters = [String: String]()
+        guard let url = URLComponents(string: self) else { return [:] }
+        for queryItem in url.queryItems ?? [] {
+            parameters.updateValue(queryItem.value ?? "", forKey: queryItem.name)
+        }
+        return parameters
+    }
+    
+    subscript(value: Int) -> Character {
+        self[index(at: value)]
+    }
+    
+    subscript(value: NSRange) -> Substring {
+        self[value.lowerBound..<value.upperBound]
+    }
+    
+    subscript(value: CountableClosedRange<Int>) -> Substring {
+        self[index(at: value.lowerBound)...index(at: value.upperBound)]
+    }
+    
+    subscript(value: CountableRange<Int>) -> Substring {
+        self[index(at: value.lowerBound)..<index(at: value.upperBound)]
+    }
+    
+    subscript(value: PartialRangeUpTo<Int>) -> Substring {
+        self[..<index(at: value.upperBound)]
+    }
+    
+    subscript(value: PartialRangeThrough<Int>) -> Substring {
+        self[...index(at: value.upperBound)]
+    }
+    
+    subscript(value: PartialRangeFrom<Int>) -> Substring {
+        self[index(at: value.lowerBound)...]
+    }
+    
+    func index(at offset: Int) -> String.Index {
+        index(startIndex, offsetBy: offset)
     }
     
 }

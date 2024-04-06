@@ -5,7 +5,6 @@
 //  Created by Lê Minh Sơn on 23/08/2023.
 //
 
-import AdmobSDK
 import Foundation
 
 extension ADManager {
@@ -23,10 +22,10 @@ extension ADManager {
         }
         
         if adShowState.version?.elementsEqual(Bundle.main.releaseVersionNumber) ?? false {
-            SSLogging.d("ADMANAGER: CONFIG SHOW STATE SETIING")
+            BBLLogging.d("ADMANAGER: CONFIG SHOW STATE SETIING")
             self.showState = adShowState
         } else {
-            SSLogging.d("ADMANAGER: CONFIG SHOW STATE DEFAULT")
+            BBLLogging.d("ADMANAGER: CONFIG SHOW STATE DEFAULT")
             self.showState = AdShowState(version: nil,
                                          isShowBanner: true,
                                          isShowOpen: true,
@@ -52,21 +51,21 @@ extension ADManager {
     
     internal func initialAdverts() {
         if !loadableAd { return }
-        SSLogging.d("ADMANAGER: CONFIG ADMOB started")
+        BBLLogging.d("ADMANAGER: CONFIG ADMOB started")
         
         let remoteConfig = RemoteConfigManager.shared
-        let stateShowAds = remoteConfig.getValue(by: KeyRemoteConfig.stateShowAds.rawValue)?.stringValue ?? ""
-        let timeRemoteShowAd = remoteConfig.getValue(by: KeyRemoteConfig.timeRemoteShowAd.rawValue)?.stringValue ?? ""
+        let stateShowAds = remoteConfig.getValue(by: DefaultRemoteKey.stateShowAds.rawValue)?.stringValue ?? ""
+        let timeRemoteShowAd = remoteConfig.getValue(by: DefaultRemoteKey.timeRemoteShowAd.rawValue)?.stringValue ?? ""
         
         loadStateShowAds(stateShowAds)
         
         loadTimeRemoteShowAd(timeRemoteShowAd)
         
-        SSLogging.d("ADMANAGER: CONFIG ADMOB done")
+        BBLLogging.d("ADMANAGER: CONFIG ADMOB done")
     }
     
     internal func loadDefaults() {
-        SSLogging.d("ADMANAGER")
+        BBLLogging.d("ADMANAGER")
         if loadableAd {
             self.showState = AdShowState(version: nil,
                                          isShowBanner: true,

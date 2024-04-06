@@ -5,7 +5,6 @@
 //  Created by Base on 10/08/2023.
 //
 
-import AdmobSDK
 import GoogleMobileAds
 import UIKit
 
@@ -21,8 +20,7 @@ public protocol AdConfigId {
     
 }
 
-extension AdConfigId {
-    
+public extension AdConfigId {
     
     var adUnitId: AdUnitID {
         return AdUnitID(rawValue: adId)
@@ -30,7 +28,7 @@ extension AdConfigId {
     
     var isEnableAd: Bool {
         return (RemoteConfigManager.shared.getValue(by: name)?.boolValue ?? false)
-        && !Constants.isUserVip
+        && !IAPState.isUserVip
     }
     
 }
@@ -60,7 +58,7 @@ public class ADManager: NSObject {
     
     internal var showState: AdShowState?
     internal var configTime: AdConfigTime?
-    internal var loadableAd = true
+    public var loadableAd = true
     
     override init() {
         super.init()
@@ -73,7 +71,7 @@ public class ADManager: NSObject {
         timeShowOpen = 0
     }
     
-    func startAds(style: ThemeStyleAds = ThemeStyleAds.origin,
+    public func startAds(style: ThemeStyleAds = ThemeStyleAds.origin,
                   testIds: [String] = []) {
         if !testIds.isEmpty {
             GADMobileAds.sharedInstance().requestConfiguration.testDeviceIdentifiers = testIds
@@ -82,7 +80,7 @@ public class ADManager: NSObject {
         AdMobManager.shared.adsNativeColor = style
     }
     
-    func disableAds() {
+    public func disableAds() {
         self.showState = AdShowState(version: Bundle.main.releaseVersionNumber,
                                      isShowBanner: false,
                                      isShowOpen: false,
@@ -91,10 +89,10 @@ public class ADManager: NSObject {
                                      isTestMode: false)
     }
     
-    func initialize(readConfig enable: Bool,
+    public func initialize(readConfig enable: Bool,
                     completion: @escaping ((_ success: Bool) -> Void)) {
         
-        SSLogging.d("ADMANAGER: \(enable)")
+        BBLLogging.d("ADMANAGER: \(enable)")
         
         if !enable {
             self.loadDefaults()
@@ -104,4 +102,33 @@ public class ADManager: NSObject {
         completion(true)
     }
     
+}
+
+extension DispatchQueue {
+    
+    func asyncSafety(_ closure: @escaping () -> Void) {
+        guard self === DispatchQueue.main && Thread.isMainThread else {
+            DispatchQueue.main.async(execute: closure)
+            return
+        }
+        closure()
+    }
+    
+    func asyncSafety(execute: DispatchWorkItem) {
+        guard self === DispatchQueue.main && Thread.isMainThread else {
+            DispatchQueue.main.async(execute: execute)
+            return
+        }
+        execute.perform()
+    }
+    
+}
+
+extension Bundle {
+    var releaseVersionNumber: String {
+        return (infoDictionary?["CFBundleShortVersionString"] as? String) ?? ""
+    }
+    var buildVersionNumber: String {
+        return (infoDictionary?["CFBundleVersion"] as? String) ?? ""
+    }
 }

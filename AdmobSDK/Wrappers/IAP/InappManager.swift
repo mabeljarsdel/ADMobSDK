@@ -17,6 +17,7 @@ public enum IAPState: String {
     case notPurchased = "notPurchased"
     case unload = "unload"
     
+    public static var isDev = false
     private static let keyIAPState = "KEY_IAP_STATE"
     
     public static var iapState: IAPState {
@@ -44,13 +45,13 @@ public enum IAPState: String {
 
 public typealias ProductIdentifier = String
 
-protocol InappManagerDelegate: AnyObject {
+public protocol InappManagerDelegate: AnyObject {
     func purchaseSuccess(id: String)
 }
 
-class InappManager: NSObject {
+public class InappManager: NSObject {
     
-    static let share = InappManager()
+    public static let share = InappManager()
     
     private override init() {
         super.init()
@@ -60,17 +61,17 @@ class InappManager: NSObject {
         }
     }
     
-    let sharedSecret: String = "973d30b0f2f845dc9f2cafe057b00dda"
-    var productIdentifiers: Set<ProductIdentifier> = Set()
-    var listProduct = Set<SKProduct>()
-    var didPaymentSuccess = BehaviorSubject<IAPState>(value: .unload)
-    var productsInfo = BehaviorSubject<[SKProduct]>(value: [])
-    var purchasedProduct: ProductIdentifier?
-    var infoPurchaseProduct: ReceiptItem?
+    private let sharedSecret: String = "973d30b0f2f845dc9f2cafe057b00dda"
+    public var productIdentifiers: Set<ProductIdentifier> = Set()
+    public var listProduct = Set<SKProduct>()
+    public var didPaymentSuccess = BehaviorSubject<IAPState>(value: .unload)
+    public var productsInfo = BehaviorSubject<[SKProduct]>(value: [])
+    public var purchasedProduct: ProductIdentifier?
+    public var infoPurchaseProduct: ReceiptItem?
     private var needShowRestoreError = false
-    weak var delegate: InappManagerDelegate?
+    public weak var delegate: InappManagerDelegate?
     
-    func getFreedaysTrial(id: String) -> Int {
+    public func getFreedaysTrial(id: String) -> Int {
         var freeDay = 0
         if let subcription = InappManager.share.listProduct.first(where: {$0.productIdentifier == id})?.introductoryPrice?.subscriptionPeriod {
             switch subcription.unit {
@@ -85,7 +86,7 @@ class InappManager: NSObject {
         return freeDay
     }
     
-    func getPrice(id: String) -> String {
+    public func getPrice(id: String) -> String {
         if let subscription = InappManager.share.listProduct.first(where: {
             $0.productIdentifier == id
         }) {
@@ -94,7 +95,7 @@ class InappManager: NSObject {
         return ""
     }
     
-    func getPriceLocale(id: String) -> Locale {
+    public func getPriceLocale(id: String) -> Locale {
         if let subscription = InappManager.share.listProduct.first(where: {
             $0.productIdentifier == id
         }) {
@@ -103,7 +104,7 @@ class InappManager: NSObject {
         return Locale.current
     }
     
-    func getPriceNumb(id: String) -> NSDecimalNumber {
+    public func getPriceNumb(id: String) -> NSDecimalNumber {
         if let subscription = InappManager.share.listProduct.first(where: {
             $0.productIdentifier == id
         }) {
@@ -112,7 +113,7 @@ class InappManager: NSObject {
         return 0
     }
     
-    func getDiscountPrice(id: String) -> String {
+    public func getDiscountPrice(id: String) -> String {
         if let subscription = InappManager.share.listProduct.first(where: {
             $0.productIdentifier == id
         }) {
@@ -121,7 +122,7 @@ class InappManager: NSObject {
         return ""
     }
     
-    func getDiscountPriceLocale(id: String) -> Locale {
+    public func getDiscountPriceLocale(id: String) -> Locale {
         if let subscription = InappManager.share.listProduct.first(where: {
             $0.productIdentifier == id
         }) {
@@ -130,7 +131,7 @@ class InappManager: NSObject {
         return Locale.current
     }
     
-    func getDiscountPriceNumb(id: String) -> NSDecimalNumber {
+    public func getDiscountPriceNumb(id: String) -> NSDecimalNumber {
         if let subscription = InappManager.share.listProduct.first(where: {
             $0.productIdentifier == id
         }) {
@@ -139,7 +140,7 @@ class InappManager: NSObject {
         return 0
     }
     
-    func checkPurchaseProduct() {
+    public func checkPurchaseProduct() {
         SwiftyStoreKit.completeTransactions(atomically: true) { [weak self] purchases in
             for purchase in purchases {
                 switch purchase.transaction.transactionState {
@@ -157,7 +158,7 @@ class InappManager: NSObject {
         }
     }
     
-    func purchaseProduct(withId id: String) {
+    public func purchaseProduct(withId id: String) {
         guard let product = listProduct.first(where: { $0.productIdentifier == id }) else { return }
         if SKPaymentQueue.canMakePayments() {
             LoadingProgressHUD.show()
@@ -166,7 +167,7 @@ class InappManager: NSObject {
         }
     }
     
-    func productInfo(id: Set<String>, isShowLoading: Bool = true,
+    public func productInfo(id: Set<String>, isShowLoading: Bool = true,
                      completed: @escaping(Set<SKProduct>) -> () = {_ in}) -> InAppRequest {
         if isShowLoading {
             LoadingProgressHUD.show()
@@ -198,7 +199,7 @@ class InappManager: NSObject {
     }
     
     // MARK: Restore
-    func restorePurchases(isShowLoading: Bool = true) {
+    public func restorePurchases(isShowLoading: Bool = true) {
         if (SKPaymentQueue.canMakePayments()) {
             if isShowLoading {
                 LoadingProgressHUD.show()
@@ -209,8 +210,8 @@ class InappManager: NSObject {
     }
     
     // MARK: Tự động Gia hạn
-    func veryCheckRegisterPack(completed: @escaping() -> ()) -> InAppRequest? {
-        let appleValidator = AppleReceiptValidator(service: isDev ? .sandbox : .production , sharedSecret: self.sharedSecret)
+    public func veryCheckRegisterPack(completed: @escaping() -> ()) -> InAppRequest? {
+        let appleValidator = AppleReceiptValidator(service: IAPState.isDev ? .sandbox : .production , sharedSecret: self.sharedSecret)
         return SwiftyStoreKit.verifyReceipt(using: appleValidator, forceRefresh: true) { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -237,8 +238,8 @@ class InappManager: NSObject {
         }
     }
     
-    func getInfoPurchasedProduct() {
-        let appleValidator = AppleReceiptValidator(service: isDev ? .sandbox : .production, sharedSecret: sharedSecret)
+    public func getInfoPurchasedProduct() {
+        let appleValidator = AppleReceiptValidator(service: IAPState.isDev ? .sandbox : .production, sharedSecret: sharedSecret)
         SwiftyStoreKit.verifyReceipt(using: appleValidator, forceRefresh: true) { result in
             switch result {
             case .success(let receipt):
@@ -259,7 +260,7 @@ class InappManager: NSObject {
 
 // MARK: - SKPaymentTransactionObserver
 extension InappManager: SKPaymentTransactionObserver {
-    func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
+    public func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         for transaction in transactions {
             switch transaction.transactionState {
             case .purchased:
@@ -279,13 +280,13 @@ extension InappManager: SKPaymentTransactionObserver {
     
     func paymentQueue(_ queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: Error) {
         if needShowRestoreError {
-            AppRouter.shared.rootViewController?.createToast(type: .error, title: error.localizedDescription)
+//            AppRouter.shared.rootViewController?.createToast(type: .error, title: error.localizedDescription)
         }
         LoadingProgressHUD.dismiss()
     }
     
     func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
-        let appleValidator = AppleReceiptValidator(service: isDev ? .sandbox : .production, sharedSecret: sharedSecret)
+        let appleValidator = AppleReceiptValidator(service: IAPState.isDev ? .sandbox : .production, sharedSecret: sharedSecret)
         SwiftyStoreKit.verifyReceipt(using: appleValidator) { [weak self] result in
             LoadingProgressHUD.dismiss()
             guard let self = self else { return }

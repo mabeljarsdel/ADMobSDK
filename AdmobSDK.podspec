@@ -1,7 +1,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "AdmobSDK"
-  spec.version      = "0.0.1"
+  spec.version      = "0.0.2"
   spec.summary      = "A small framework extending from Google-Mobile-Ads-SDK"
 
   spec.description  = <<-DESC
@@ -37,6 +37,11 @@ Pod::Spec.new do |spec|
   spec.dependency "Adjust"
   spec.dependency "SkeletonView"
   spec.dependency 'Toast-Swift'
+  
+  spec.dependency 'RxSwift', '~> 5.1.0'
+  spec.dependency 'RxCocoa', '~> 5.1.0'
+  
+  spec.dependency 'SVProgressHUD'
 
   ### Google Admob
   spec.dependency 'Google-Mobile-Ads-SDK'
