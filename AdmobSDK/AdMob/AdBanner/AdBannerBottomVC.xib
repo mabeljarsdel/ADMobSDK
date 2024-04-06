@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AdBannerBottomVC" customModule="EasyScanner" customModuleProvider="target">
+            <connections>
+                <outlet property="adHeightConstraint" destination="bD3-Yl-l2g" id="cry-pC-LGw"/>
+                <outlet property="bottomBannerView" destination="fzk-iD-haW" id="EHz-mJ-HWc"/>
+                <outlet property="containerView" destination="duZ-s1-eVv" id="utV-6k-FwJ"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="DG6-zK-PHi">
+                    <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="duZ-s1-eVv">
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="728"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        </view>
+                        <view clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="249" translatesAutoresizingMaskIntoConstraints="NO" id="fzk-iD-haW">
+                            <rect key="frame" x="0.0" y="728" width="414" height="90"/>
+                            <subviews>
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2x4-ti-xcw">
+                                    <rect key="frame" x="8" y="5" width="361" height="80"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                    </userDefinedRuntimeAttributes>
+                                </view>
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0AR-Tm-wNb">
+                                    <rect key="frame" x="374" y="5" width="32" height="25"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="25" id="cYt-Kg-zBf"/>
+                                    </constraints>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                    </userDefinedRuntimeAttributes>
+                                </view>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstAttribute="trailing" secondItem="0AR-Tm-wNb" secondAttribute="trailing" constant="8" id="0TW-sa-HhQ"/>
+                                <constraint firstAttribute="trailing" secondItem="2x4-ti-xcw" secondAttribute="trailing" constant="45" id="4xa-PV-Nsy"/>
+                                <constraint firstItem="0AR-Tm-wNb" firstAttribute="top" secondItem="fzk-iD-haW" secondAttribute="top" constant="5" id="QzC-KZ-EVe"/>
+                                <constraint firstItem="0AR-Tm-wNb" firstAttribute="leading" secondItem="2x4-ti-xcw" secondAttribute="trailing" constant="5" id="Rzt-bP-ZFB"/>
+                                <constraint firstAttribute="height" constant="90" id="bD3-Yl-l2g"/>
+                                <constraint firstAttribute="bottom" secondItem="2x4-ti-xcw" secondAttribute="bottom" constant="5" id="h4E-sy-OKd"/>
+                                <constraint firstItem="2x4-ti-xcw" firstAttribute="top" secondItem="fzk-iD-haW" secondAttribute="top" constant="5" id="lqq-wf-dSt"/>
+                                <constraint firstItem="2x4-ti-xcw" firstAttribute="leading" secondItem="fzk-iD-haW" secondAttribute="leading" constant="8" id="oQH-oa-2Hv"/>
+                            </constraints>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                            </userDefinedRuntimeAttributes>
+                        </view>
+                    </subviews>
+                </stackView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="DG6-zK-PHi" secondAttribute="trailing" id="0rI-E7-CcY"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="DG6-zK-PHi" secondAttribute="bottom" id="H2W-gn-4XO"/>
+                <constraint firstItem="DG6-zK-PHi" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="bQu-kR-Oeh"/>
+                <constraint firstItem="DG6-zK-PHi" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="nPs-5Q-Pgb"/>
+            </constraints>
+            <point key="canvasLocation" x="55" y="58"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
